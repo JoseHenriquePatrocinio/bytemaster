@@ -6,11 +6,11 @@
             </v-card-title>
             <v-card-text>
                 <v-form class="px-3" ref="form">
-                    <v-text-field label="Nome" v-model="title" prepend-icon="mdi-alphabetical" :rules="inputRules"></v-text-field>
-                    <v-text-field label="Documento" v-model="content" prepend-icon="mdi-id-card"
+                    <v-text-field label="Nome" v-model="nome" prepend-icon="mdi-alphabetical" :rules="inputRules"></v-text-field>
+                    <v-text-field label="Documento" v-model="documento" prepend-icon="mdi-id-card"
                         :rules="inputRules"></v-text-field>
-                        <v-text-field label="Contato" v-model="title" prepend-icon="mdi-phone" :rules="inputRules"></v-text-field>
-                        <v-text-field label="Email" v-model="title" prepend-icon="mdi-email" :rules="inputRules"></v-text-field>
+                        <v-text-field label="Contato" v-model="contato" prepend-icon="mdi-phone" :rules="inputRules"></v-text-field>
+                        <v-text-field label="Email" v-model="email" prepend-icon="mdi-email" :rules="inputRules"></v-text-field>
 
                     <div class="text-right">
                         <v-btn class="mx-0 mt-3 mr-2" @click="submit">Cadastrar</v-btn>
@@ -27,8 +27,10 @@ export default {
     name: "ClienteView",
     data() {
         return {
-            title: "",
-            content: "",
+            nome: "",
+            documento: "",
+            contato:"",
+            email:"",
             due: "",
             menu: false,
             inputRules: [
@@ -38,9 +40,7 @@ export default {
     },
     methods: {
         submit() {
-            if (this.$refs.form.validate()) {
-                console.log(this.title, this.content)
-            }
+            console.log("Sucesso!")
         }
     }
 }
