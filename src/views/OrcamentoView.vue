@@ -1,9 +1,7 @@
 <template>
     <div class="mt-4">
-        <v-card>
-            <v-card-title>
-                Orçamento de Computador
-            </v-card-title>
+        <h1 class="text-subtitle-2 grey--text pa-3">Orçamento de Computador</h1>
+        <v-card class="my-5">
             <v-card-text>
                 <v-form class="px-3" ref="form">
                     <v-select label="Produto" v-model="product.computerPart" :items="computerParts"
@@ -17,28 +15,29 @@
                         <v-btn class="mx-0 mt-3 mr-2" @click="addProductToBudget">Adicionar ao Orçamento</v-btn>
                         <v-btn class="mx-0 mt-3" @click="resetForm">Limpar</v-btn>
                     </div>
-
-                    <v-divider class="my-3"></v-divider>
-
-                    <v-list>
-                        <v-subheader>Produtos no Orçamento</v-subheader>
-                        <v-list-item-group>
-                            <v-list-item v-for="(item, index) in budget" :key="index">
-                                <v-list-item-content>
-                                    <v-list-item-title>
-                                        {{ item.computerPart }} - Preço: ${{ item.price }} - Quantidade: {{ item.stock }}
-                                    </v-list-item-title>
-                                </v-list-item-content>
-                                <v-list-item-action>
-                                    <v-btn icon @click="removeProductFromBudget(index)">
-                                        <v-icon>mdi-delete</v-icon>
-                                    </v-btn>
-                                </v-list-item-action>
-                            </v-list-item>
-                        </v-list-item-group>
-                    </v-list>
                 </v-form>
+            </v-card-text>
+        </v-card>
 
+        <v-card class="my-5">
+            <v-card-text>
+                <v-list>
+                    <v-subheader class="font-weight-bold">Produtos no Orçamento</v-subheader>
+                    <v-list-item-group>
+                        <v-list-item v-for="(item, index) in budget" :key="index">
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    {{ item.computerPart }} - Preço: ${{ item.price }} - Quantidade: {{ item.stock }}
+                                </v-list-item-title>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-btn icon @click="removeProductFromBudget(index)">
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                            </v-list-item-action>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
                 <div class="text-right">
                     <v-btn class="mx-0 mt-3" @click="finishBudget">Finalizar Orçamento</v-btn>
                 </div>

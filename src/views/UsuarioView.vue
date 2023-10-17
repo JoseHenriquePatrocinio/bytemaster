@@ -1,14 +1,13 @@
 <template>
     <div class="mt-4">
-        <v-card>
-            <v-card-title>
-                Cadastro de Usuário
-            </v-card-title>
+        <h1 class="text-subtitle-2 grey--text pa-3">Cadastro de Usuário</h1>
+
+        <v-card class="my-5">
             <v-card-text>
                 <v-form class="px-3" ref="form">
                     <v-text-field label="Nome" v-model="nome" prepend-icon="mdi-alphabetical"
                         :rules="inputRules"></v-text-field>
-                    <v-text-field label="Matricula" v-model="matricula" prepend-icon="mdi-id-card"
+                    <v-text-field label="Matrícula" v-model="matricula" prepend-icon="mdi-id-card"
                         :rules="inputRules"></v-text-field>
                     <v-text-field label="Senha" v-model="senha" prepend-icon="mdi-lock" :rules="inputRules"></v-text-field>
                     <v-text-field label="Email" v-model="email" prepend-icon="mdi-email" :rules="emailRules"></v-text-field>
@@ -20,17 +19,20 @@
             </v-card-text>
         </v-card>
 
-        <v-card class="mt-4">
-            <v-card-title>
-                Lista de Usuários
-            </v-card-title>
+        <v-card class="my-5">
             <v-card-text>
                 <v-list>
+                    <v-subheader class="font-weight-bold">Lista de usuários</v-subheader>
                     <v-list-item-group v-model="selectedUsers">
                         <v-list-item v-for="(user, index) in users" :key="index">
                             <v-list-item-content>
                                 <v-list-item-title>{{ user.nome }}</v-list-item-title>
                             </v-list-item-content>
+                            <v-list-item-action>
+                                <v-btn icon>
+                                    <v-icon>mdi-pencil</v-icon>
+                                </v-btn>
+                            </v-list-item-action>
                             <v-list-item-action>
                                 <v-btn icon @click="deleteUser(index)">
                                     <v-icon>mdi-delete</v-icon>

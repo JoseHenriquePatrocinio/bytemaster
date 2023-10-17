@@ -1,9 +1,8 @@
 <template>
     <div class="mt-4">
-      <v-card>
-        <v-card-title>
-          Gerar Relatório
-        </v-card-title>
+      <h1 class="text-subtitle-2 grey--text pa-3">Gerar Relatório</h1>
+
+      <v-card class="my-5">
         <v-card-text>
           <v-form class="px-3" ref="form">
             <v-menu>

@@ -1,5 +1,5 @@
 <template>
-    <div class="dashboard">
+    <div class="mt-4">
         <h1 class="text-subtitle-2 grey--text pa-3">Ordens de serviço</h1>
 
         <v-container class="my-5">

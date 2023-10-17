@@ -1,9 +1,7 @@
 <template>
     <div class="mt-4">
-        <v-card>
-            <v-card-title>
-                Cadastrar Produto
-            </v-card-title>
+        <h1 class="text-subtitle-2 grey--text pa-3">Cadastrar Produto</h1>
+        <v-card class="my-5">
             <v-card-text>
                 <v-form class="px-3" ref="form">
                     <v-select label="Produto" v-model="product.computerPart" :items="computerParts"

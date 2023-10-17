@@ -1,9 +1,7 @@
 <template>
     <div class="mt-4">
-        <v-card>
-            <v-card-title>
-                Cadastrar Cliente
-            </v-card-title>
+        <h1 class="text-subtitle-2 grey--text pa-3">Cadastrar Cliente</h1>
+        <v-card class="my-5">
             <v-card-text>
                 <v-form class="px-3" ref="form">
                     <v-text-field label="Nome" v-model="nome" prepend-icon="mdi-alphabetical" :rules="inputRules"></v-text-field>
