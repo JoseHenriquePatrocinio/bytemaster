@@ -28,11 +28,9 @@
                             <v-list-item-content>
                                 <v-list-item-title>{{ user.nome }}</v-list-item-title>
                             </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon>mdi-pencil</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
+                            <div class="text-center mt-2 mr-2">
+                                <EditarUserComp />
+                            </div>
                             <v-list-item-action>
                                 <v-btn icon @click="deleteUser(index)">
                                     <v-icon>mdi-delete</v-icon>
@@ -47,6 +45,7 @@
 </template>
   
 <script>
+import EditarUserComp from "@/components/EditarUserComp.vue"
 export default {
     name: "CadastroUsuario",
     data() {
@@ -102,6 +101,9 @@ export default {
         deleteUser(index) {
             this.users.splice(index, 1);
         }
+    },
+    components:{
+        EditarUserComp
     }
 };
 </script>
