@@ -24,6 +24,47 @@
 
             </v-card-text>
         </v-card>
+
+        <h2 class="text-subtitle-2 grey--text pa-3">Orçamentos pendentes de aprovação</h2>
+
+        <v-tooltip>
+            <template v-slot:activator="{ on }">
+                <v-btn small text color="grey" @click="sortBy('clienteNome')" v-on="on">
+                    <v-icon left small>mdi-account</v-icon>
+                    <span class="caption text-uppercase">Nome Cliente</span>
+                </v-btn>
+            </template>
+            <span>Filtre orcamentos pelo nome do cliente</span>
+        </v-tooltip>
+
+        <v-card class="pa-3 mb-1" v-for="orcamento in listaOrcamento" :key="orcamento.id">
+            <v-layout row wrap :class="'pa-3'">
+                <v-flex xs12 md6>
+                    <div class="caption grey--text">Modelo do produto</div>
+                    <div>{{ orcamento.produtoModelo }}</div>
+                </v-flex>
+                <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">Cliente</div>
+                    <div>{{ orcamento.clienteNome }}</div>
+                </v-flex>
+                <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">Valor</div>
+                    <div>{{ orcamento.produtoValorUnitario.toFixed(2) }}</div>
+                </v-flex>
+                <v-flex xs6 sm4 md2 class="d-flex justify-center align-center">
+                    <div class="text-center mt-2 mr-2">
+                        <v-btn @click="AprovarOrcamento(orcamento.id)">
+                            <v-icon>mdi-check</v-icon>
+                        </v-btn>
+                    </div>
+                    <div class="text-center mt-2">
+                        <v-btn @click="ReprovarOrcamento(orcamento.id)">
+                            <v-icon>mdi-alpha-x-box-outline</v-icon>
+                        </v-btn>
+                    </div>
+                </v-flex>
+            </v-layout>
+        </v-card>
     </div>
 </template>
   
@@ -34,9 +75,13 @@ export default {
     data() {
         return {
             listaProduto: [],
+            listaOrcamento: null,
+            orcamento: null,
             produtoSelecionado: null,
             produtoDetalhado: null,
-            documentoCliente: null
+            documentoCliente: null,
+            erro: false,
+            loading: true,
         };
     },
     methods: {
@@ -54,6 +99,63 @@ export default {
                     console.log(error);
                 });
         },
+
+        ConsultarProdutos() {
+            axios
+                .get('https://localhost:44371/api/Produtos/ConsultarProdutos')
+                .then((response) => {
+                    this.listaProduto = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.erro = true;
+                })
+                .finally(() => (this.loading = false));
+        },
+
+        carregarOrcamentos() {
+            axios
+                .get('https://localhost:44371/api/Orcamentos/ConsultarOrcamentos')
+                .then((response) => {
+                    this.listaOrcamento = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.erro = true;
+                })
+                .finally(() => (this.loading = false));
+        },
+
+        AprovarOrcamento(id) {
+            axios
+                .put(`https://localhost:44371/api/Orcamentos/AprovarOrcamento/${id}`)
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error("Erro ao aprovar orçamento:", error);
+                })
+                .finally(() => {
+                    this.carregarOrcamentos();
+                    this.resetForm();
+                });
+        },
+
+        ReprovarOrcamento(id) {
+            axios
+                .put(`https://localhost:44371/api/Orcamentos/ReprovarOrcamento/${id}`)
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error("Erro ao reprovar orçamento:", error);
+                })
+                .finally(() => {
+                    this.carregarOrcamentos();
+                    this.resetForm();
+                });
+        },
+
         submitForm() {
             if (this.documentoCliente && this.produtoSelecionado) {
                 const formData = {
@@ -61,7 +163,8 @@ export default {
                     idProduto: this.produtoDetalhado.id,
                 };
 
-                axios.post('https://localhost:44371/api/Orcamentos/AdicionarOrcamento', formData)
+                axios
+                    .post('https://localhost:44371/api/Orcamentos/AdicionarOrcamento', formData)
                     .then((response) => {
                         console.log(response.data);
                     })
@@ -69,6 +172,7 @@ export default {
                         alert(error);
                     })
                     .finally(() => {
+                        this.carregarOrcamentos();
                         this.resetForm();
                     });
             } else {
@@ -80,6 +184,9 @@ export default {
             this.produtoSelecionado = null;
             this.produtoDetalhado = null;
         },
+        sortBy(prop) {
+            this.listaOrcamento.sort((a, b) => a[prop] < b[prop] ? -1 : 1)
+        },
     },
     watch: {
         produtoSelecionado(newVal) {
@@ -89,16 +196,8 @@ export default {
         },
     },
     mounted() {
-        axios
-            .get('https://localhost:44371/api/Produtos/ConsultarProdutos')
-            .then((response) => {
-                this.listaProduto = response.data;
-            })
-            .catch((error) => {
-                console.log(error);
-                this.erro = true;
-            })
-            .finally(() => (this.loading = false));
+        this.ConsultarProdutos();
+        this.carregarOrcamentos();
     },
 };
 </script>
