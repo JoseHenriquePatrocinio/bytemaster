@@ -4,85 +4,102 @@
         <v-card class="my-5">
             <v-card-text>
                 <v-form class="px-3" ref="form">
-                    <v-select label="Produto" v-model="product.computerPart" :items="computerParts"
-                        prepend-icon="mdi-desktop-tower" :rules="inputRules"></v-select>
-                    <v-text-field label="Preço" v-model="product.price" prepend-icon="mdi-currency-usd" :rules="inputRules"
-                        type="number"></v-text-field>
-                    <v-text-field label="Quantidade" v-model="product.stock" prepend-icon="mdi-package-variant"
-                        :rules="inputRules" type="number"></v-text-field>
 
-                    <div class="text-right">
-                        <v-btn class="mx-0 mt-3 mr-2" @click="addProductToBudget">Adicionar ao Orçamento</v-btn>
-                        <v-btn class="mx-0 mt-3" @click="resetForm">Limpar</v-btn>
-                    </div>
+                    <v-text-field v-model="documentoCliente" label="Digite o documento do cliente"></v-text-field>
+
+                    <v-select v-model="produtoSelecionado" :items="listaProduto" item-text="modelo" item-value="id"
+                        label="Selecione um produto"></v-select>
                 </v-form>
-            </v-card-text>
-        </v-card>
 
-        <v-card class="my-5">
-            <v-card-text>
-                <v-list>
-                    <v-subheader class="font-weight-bold">Produtos no Orçamento</v-subheader>
-                    <v-list-item-group>
-                        <v-list-item v-for="(item, index) in budget" :key="index">
-                            <v-list-item-content>
-                                <v-list-item-title>
-                                    {{ item.computerPart }} - Preço: ${{ item.price }} - Quantidade: {{ item.stock }}
-                                </v-list-item-title>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon @click="removeProductFromBudget(index)">
-                                    <v-icon>mdi-delete</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-list>
+                <v-card v-if="produtoDetalhado">
+                    <v-card-title>{{ produtoDetalhado.modelo }}</v-card-title>
+                    <v-card-subtitle>{{ produtoDetalhado.descricao }}</v-card-subtitle>
+                    <v-card-text>Valor Unitário: R$ {{ produtoDetalhado.valorUnit.toFixed(2) }}</v-card-text>
+                </v-card>
+
                 <div class="text-right">
-                    <v-btn class="mx-0 mt-3" @click="finishBudget">Finalizar Orçamento</v-btn>
+                    <v-btn class="mx-0 mt-3 mr-2" @click="submitForm">Adicionar ao Orçamento</v-btn>
+                    <v-btn class="mx-0 mt-3" @click="resetForm">Limpar</v-btn>
                 </div>
+
             </v-card-text>
         </v-card>
     </div>
 </template>
   
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-            product: {
-                computerPart: null,
-                price: 0,
-                stock: 0
-            },
-            computerParts: ['Placa-mãe', 'Processador', 'Placa de vídeo', 'Memória RAM', 'HD/SSD', 'Fonte de alimentação', 'Gabinete', 'Monitor', 'Teclado', 'Mouse'],
-            inputRules: [
-                v => !!v || 'Campo obrigatório'
-            ],
-            budget: []
+            listaProduto: [],
+            produtoSelecionado: null,
+            produtoDetalhado: null,
+            documentoCliente: null
         };
     },
     methods: {
-        addProductToBudget() {
-            if (this.product.computerPart && this.product.price > 0 && this.product.stock > 0) {
-                this.budget.push({ ...this.product });
-                this.resetForm();
+        buscarProdutoDetalhes(id) {
+            axios
+                .get('https://localhost:44371/api/Produtos/ConsultarProduto', {
+                    params: {
+                        id: id
+                    }
+                })
+                .then((response) => {
+                    this.produtoDetalhado = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        submitForm() {
+            if (this.documentoCliente && this.produtoSelecionado) {
+                const formData = {
+                    idCliente: this.documentoCliente,
+                    idProduto: this.produtoDetalhado.id,
+                };
+
+                axios.post('https://localhost:44371/api/Orcamentos/AdicionarOrcamento', formData)
+                    .then((response) => {
+                        console.log(response.data);
+                    })
+                    .catch((error) => {
+                        alert(error);
+                    })
+                    .finally(() => {
+                        this.resetForm();
+                    });
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
             }
         },
         resetForm() {
-            this.product = {
-                computerPart: null,
-                price: 0,
-                stock: 0
-            };
+            this.documentoCliente = null;
+            this.produtoSelecionado = null;
+            this.produtoDetalhado = null;
         },
-        finishBudget() {
-            console.log('Orçamento Finalizado:', this.budget);
+    },
+    watch: {
+        produtoSelecionado(newVal) {
+            if (newVal) {
+                this.buscarProdutoDetalhes(newVal);
+            }
         },
-        removeProductFromBudget(index) {
-            this.budget.splice(index, 1);
-        }
-    }
-}
+    },
+    mounted() {
+        axios
+            .get('https://localhost:44371/api/Produtos/ConsultarProdutos')
+            .then((response) => {
+                this.listaProduto = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+                this.erro = true;
+            })
+            .finally(() => (this.loading = false));
+    },
+};
 </script>
   
