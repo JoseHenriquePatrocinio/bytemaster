@@ -3,7 +3,7 @@
         <v-dialog v-model="dialogVisible" max-width="600px">
             <template v-slot:activator="{ on, attrs }">
                 <v-btn v-bind="attrs" v-on="on">
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon>mdi-eye</v-icon>
                 </v-btn>
             </template>
             <v-card>
