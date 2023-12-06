@@ -44,7 +44,7 @@
                     </v-flex>
                     <v-flex xs6 sm4 md2 class="d-flex justify-center align-center">
                         <div class="text-center mt-2 mr-2">
-                            <EditarComp />
+                            <EditarComp :ordem-id="ordemServico.id" />
                         </div>
                         <div class="text-center mt-2">
                             <v-btn @click="FinalizarOrdem(ordemServico.id)">
