@@ -1,26 +1,26 @@
 <template>
   <v-app>
-    <NavbarComp />
-    
-    <v-main class="mx-4 mb-4">
-      <router-view />
-    </v-main>
-    
-    <FooterComp />
+    <div>
+      <NavbarComp v-if="localStorageItem !== null" />
+      
+      <v-main class="mx-4 mb-4">
+        <router-view />
+      </v-main>
+      
+    </div>
   </v-app>
 </template>
 
 <script>
 import NavbarComp from '@/components/NavbarComp.vue'
-import FooterComp from '@/components/FooterComp.vue'
+
 export default {
   name: 'App',
   components: {
-    NavbarComp,
-    FooterComp
+    NavbarComp
   },
   data: () => ({
-
-  }),
+    localStorageItem: localStorage.getItem('token')
+  })
 };
 </script>
