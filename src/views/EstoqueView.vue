@@ -15,6 +15,24 @@
                 </v-form>
             </v-card-text>
         </v-card>
+
+        <v-card class="pa-3 mb-1" v-for="produto in listaProduto" :key="produto.id">
+            <v-layout row wrap :class="'pa-3'">
+                <v-flex xs12 md5>
+                    <div class="caption grey--text">ID</div>
+                    <div>{{ produto.id }}</div>
+                </v-flex>
+                <v-flex xs6 sm4 md5>
+                    <div class="caption grey--text">Modelo do produto</div>
+                    <div>{{ produto.modelo }}</div>
+                </v-flex>
+                <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">Valor</div>
+                    <div>{{ produto.valorUnit.toFixed(2) }}</div>
+                </v-flex>
+            </v-layout>
+        </v-card>
+
     </div>
 </template>
 
@@ -23,6 +41,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            listaProduto: [],
+            produto: null,
             modelo: "",
             descricao: "",
             valorUnit: null
@@ -45,14 +65,30 @@ export default {
                     console.error("Erro ao cadastrar produto:", error);
                 })
                 .finally(() => {
+                    this.ConsultarProdutos();
                     this.resetForm();
                 });
+        },
+        ConsultarProdutos() {
+            axios
+                .get('https://localhost:44371/api/Produtos/ConsultarProdutos')
+                .then((response) => {
+                    this.listaProduto = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.erro = true;
+                })
+                .finally(() => (this.loading = false));
         },
         resetForm() {
             this.modelo = null;
             this.descricao = null;
             this.valorUnit = null;
         },
-    }
+    },
+    mounted() {
+        this.ConsultarProdutos();
+    },
 }
 </script>
