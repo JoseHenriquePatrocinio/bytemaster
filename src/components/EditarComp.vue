@@ -1,61 +1,87 @@
 <template>
-    <div>
-        <v-dialog v-model="dialogVisible" max-width="600px">
-            <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on">
-                    <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-            </template>
-            <v-card>
-                <v-card-title>
-                    Editar Ordem de serviço
-                </v-card-title>
-                <v-card-text>
-                    <v-form class="px-3" ref="form">
-                        <v-text-field label="Titulo" v-model="title" prepend-icon="mdi-folder"></v-text-field>
-                        <v-textarea label="Descrição" v-model="content" prepend-icon="mdi-edit"></v-textarea>
-
-                        <v-menu>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field v-model="due" label="Data" prepend-icon="mdi-calendar" v-bind="attrs"
-                                    v-on="on"></v-text-field>
-                            </template>
-                            <v-date-picker v-model="due" @input="menu = false"></v-date-picker>
-                        </v-menu>
-
-                        <div class="text-right">
-                            <v-btn class="mx-0 mt-3 mr-2" @click="submit">Salvar</v-btn>
-                            <v-btn class="mx-0 mt-3" @click="cancel">Cancelar</v-btn>
-                        </div>
-                    </v-form>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-    </div>
+    <v-dialog v-model="dialogVisible" max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs" v-on="on" @click="ConsultarOrdem()">
+                <v-icon>mdi-eye</v-icon>
+            </v-btn>
+        </template>
+        <v-card v-if="ordemDetalhe">
+            <v-card-title>
+                Detalhes da Ordem de Serviço
+            </v-card-title>
+            <v-card-text>
+                <v-row>
+                    <v-col>
+                        <strong>Cliente:</strong> {{ ordemDetalhe.clienteNome }}
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <strong>Produto:</strong> {{ ordemDetalhe.produtoModelo }}
+                    </v-col>
+                </v-row>
+                <v-row> 
+                    <v-col>
+                        <strong>Descrição:</strong> {{ ordemDetalhe.descricaoProduto }}
+                    </v-col>
+                </v-row>
+                <v-row> 
+                    <v-col>
+                        <strong>Situação:</strong> {{ ordemDetalhe.situacaoDescricao }}
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <strong>Data:</strong> {{ formatarData(ordemDetalhe.dataOs) }}
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col class="text-right">
+                        <v-btn class="mx-0 mt-3" @click="cancel">Fechar</v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-    name: "EditarComp",
+    props: {
+        ordemId: {
+            type: Number,
+            required: true,
+        },
+    },
     data() {
         return {
-            title: "",
-            content: "",
-            due: "",
-            menu: false,
+            ordemDetalhe: null,
             dialogVisible: false
         }
     },
     methods: {
-        submit() {
-            if (this.$refs.form.validate()) {
-                console.log(this.title, this.content)
-                this.dialogVisible = false;
-            }
+        ConsultarOrdem() {
+            axios
+                .get('https://localhost:44371/api/OrdemServicos/ConsultarOrdem', {
+                    params: { id: this.ordemId }
+                })
+                .then((response) => {
+                    this.ordemDetalhe = response.data;
+                    this.dialogVisible = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        formatarData(data) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const dataFormatada = new Date(data).toLocaleDateString(undefined, options);
+            return dataFormatada;
         },
         cancel() {
-            this.dialogVisible = false;
+            this.dialogVisible = false
         }
-    }
+    },
 }
 </script>

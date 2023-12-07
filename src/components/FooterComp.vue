@@ -17,7 +17,7 @@ export default {
     data: () => ({
         links: [
             'Suporte',
-            'Backup',
+            'Intranet',
             'Email'
         ],
     }),
